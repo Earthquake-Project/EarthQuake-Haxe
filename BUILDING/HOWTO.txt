@@ -1,0 +1,44 @@
+pre:
+	Haxe 
+	FlashDevelop
+	It is useful to have a source code text editor like Notepad++
+
+step one : 
+	open ShockwaveParser.hxproj in FlashDevelop
+	(I am using FD 5.2.0.3 - Brian151)
+step two : 
+	In the build configuration drop-downs,
+	type one of:
+		"RIFF","Earthquake","Application"
+	(see buildconfig.png)
+other stuff :
+	If you add a new class, you will need to edit the module's 
+	corresponding .hxml file to include it while compiling
+
+	There is a particular process to building these as modules
+	with an exposed API:
+		RIFF & Earthquake:
+		"@:expose" in the beginning of the .hx file
+		RIFF:
+			"#if (compileLvl=="libRIFF")
+			@keep
+			#end" after the expose statement
+		Earthquake:
+			"#if (compileLvl=="libShockwave")
+			@keep
+			#end" after the expose statement
+		Application:
+			no special statements
+	excluding packages:
+		Sometimes, modules will compile with dependancies included.
+		To avoid compiling a package/Class, 
+		use this in the .hxml file:
+		--macro exclude("pkg1.pkg2")
+		or
+		--macro exclude("pkg1.pkg2.Class")
+	hiding stuff from IDE's tree view:
+		open ShockwaveParser.hxproj in code editor of choice
+		find hiddenPaths node
+		add:
+			<hidden path="folderName" />
+			

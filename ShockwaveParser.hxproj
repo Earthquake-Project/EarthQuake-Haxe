@@ -38,6 +38,7 @@
   <hiddenPaths>
     <hidden path="obj" />
 	<hidden path="ORIG_JS_BUILD" />
+	<hidden path="BUILDING" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand>haxe modules.hxml $(TargetBuild).hxml</preBuildCommand>
