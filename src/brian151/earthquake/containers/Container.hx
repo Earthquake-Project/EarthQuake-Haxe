@@ -42,6 +42,7 @@ class Container extends File
 	private var sectionList:Array<AssociationStructure>;
 	private var isCast:Bool;
 	private var sectionListNotFree:Array<Int>;
+	private var aTabOffset:Int;
 	public function new(src:ArrayBuffer):Void {
 		super(src);
 		isProjector = false;
@@ -103,9 +104,13 @@ class Container extends File
 				if (id == "RIFX" || id == "imap" || id == "mmap" || id == "KEY*") {
 					var bufN = new ArrayBuffer(0xC);
 					var viewN = new DataView(bufN);
-					var secStruct =  new AssociationStructure(new Section(bufN, 0, 4, id));
-					secStruct.setType("root");
-					sectionList.push(secStruct);
+					if (id != "RIFX") {
+						var secStruct =  new AssociationStructure(new Section(bufN, 0, 4, id));
+						secStruct.setType("root");
+						sectionList.push(secStruct);
+					}
+					if (id == "KEY*")
+						aTabOffset = offset3;
 				} else if (id != "free" && id != "junk") {
 					sectionListNotFree.push(i);
 					var secStruct = new AssociationStructure(getSectionAt(offset3));
@@ -114,14 +119,16 @@ class Container extends File
 						secType = "cast_member";
 					} else if (id.substring(0, 2) == "VW" || id.substring(0, 2) == "DR") {
 						secType = "view";
-					} else if () {
+					} else if (id == "LctX" || id == "CAS*" || id == "Fmap" || id == "Cinf") {
 						secType = "lib_linked";
 					}
 					sectionList.push(secStruct);
+					secStruct.setType(secType);
 				} else {
 					var bufN = new ArrayBuffer(0xC);
 					var viewN = new DataView(bufN);
-					sectionList.push(new Section(bufN, 0, 4, id));
+					var secStruct = new AssociationStructure(new Section(bufN, 0, 4, id));
+					sectionList.push(secStruct);
 				}
 			}
 			state = 1;
@@ -202,5 +209,7 @@ class Container extends File
 		untyped __js__("$hx_scope.shockwaveKeys = out");
 		return out;
 		*/
+		var aTab:Section = getSectionAt(aTabOffset);
+		
 	}
 }
