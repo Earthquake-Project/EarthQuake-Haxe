@@ -1,4 +1,4 @@
-package brian151.riff;
+package riff;
 import js.html.DataView;
 
 /*

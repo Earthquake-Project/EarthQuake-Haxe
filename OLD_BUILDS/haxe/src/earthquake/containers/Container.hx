@@ -1,12 +1,12 @@
-package brian151.earthquake.containers;
-import brian151.riff.File;
-import brian151.riff.LinkedSectionHandler;
-import brian151.riff.Section;
+package earthquake.containers;
+import riff.File;
+import riff.LinkedSectionHandler;
+import riff.Section;
 import js.html.ArrayBuffer;
 import js.html.DataView;
 import js.html.Uint32Array;
 import js.Browser;
-import brian151.earthquake.containers.AssociationStructure;
+import earthquake.containers.AssociationStructure;
 
 /*
  Copyright {2017} {Brian151 (https://github.com/Brian151)}

@@ -1,8 +1,8 @@
-package brian151.earthquake;
-import brian151.earthquake.containers.ContainerCompressed;
-import brian151.earthquake.containers.Container;
-import brian151.earthquake.containers.ContainerProtected;
-import brian151.riff.File;
+package earthquake;
+import earthquake.containers.ContainerCompressed;
+import earthquake.containers.Container;
+import earthquake.containers.ContainerProtected;
+import riff.File;
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
 import js.html.DataView;

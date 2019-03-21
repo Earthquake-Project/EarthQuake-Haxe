@@ -1,5 +1,5 @@
-package brian151.earthquake.containers;
-import brian151.riff.File;
+package earthquake.containers;
+import riff.File;
 import js.html.ArrayBuffer;
 
 /**

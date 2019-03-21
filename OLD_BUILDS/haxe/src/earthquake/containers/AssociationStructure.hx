@@ -1,5 +1,5 @@
-package brian151.earthquake.containers;
-import brian151.riff.Section;
+package earthquake.containers;
+import riff.Section;
 
 /*
  Copyright {2017} {Brian151 (https://github.com/Brian151)}

@@ -1,0 +1,7 @@
+#compiles the RIFF library
+-D compileLvl=libRIFF
+-js bin/RIFF_hx.js
+riff.File
+riff.Section
+riff.SectionHandler
+riff.LinkedSectionHandler

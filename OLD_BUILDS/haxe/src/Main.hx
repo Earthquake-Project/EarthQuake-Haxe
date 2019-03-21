@@ -1,5 +1,4 @@
-package brian151;
-import brian151.earthquake.Movie;
+import earthquake.Movie;
 import js.Lib;
 import js.html.XMLHttpRequest;
 import js.Browser;

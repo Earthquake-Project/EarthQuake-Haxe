@@ -1,6 +1,5 @@
-package brian151.earthquake.containers;
-import brian151.riff.File;
-import js.html.ArrayBuffer;
+package riff;
+import js.html.DataView;
 
 /*
  Copyright {2017} {Brian151 (https://github.com/Brian151)}
@@ -18,27 +17,22 @@ import js.html.ArrayBuffer;
    limitations under the License.
 */
 
+//to-do: recover lost progress
 
 /**
  * ...
  * @author Brian151
  */
 @:expose
-#if (compileLvl=="libShockwave")
+#if (compileLvl=="libRIFF")
 @:keep
 #end
-class ContainerCompressed extends File
+class SectionHandler 
 {
-	private var isProjector:Bool;
-	public function new(src:ArrayBuffer):Void 
-	{
-		super(src);
-		isProjector = false;
+	private var target:Section;
+	private var view:DataView;
+	public function new(src:Section):Void {
+		target = src;
+		view = target.get_view();
 	}
-	public function checkCast():Bool{
-		return false;
-	}
-	public function setProjector():Void{
-		isProjector = true;
-	}	
 }

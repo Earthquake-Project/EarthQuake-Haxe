@@ -1,4 +1,4 @@
-package brian151.riff;
+package riff;
 import js.html.ArrayBuffer;
 import js.html.DataView;
 import js.Browser;
