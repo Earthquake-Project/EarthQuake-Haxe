@@ -3,6 +3,7 @@ EarthQuake.ContainerCompressed = function(riff) {
 	this.bytes = new DataStream(riff.buffer,0,riff.endianness);
 	this.subformat = riff.subformat;
 	this.buffer = riff.buffer;
+	this.chunks = [];
 }
 EarthQuake.ContainerCompressed.prototype.init = function() {
 	var vers = this.readChunk(0xc,0,true,true,true);
@@ -111,23 +112,30 @@ EarthQuake.ContainerCompressed.prototype.readafterBurnerMap = function() {
 		var realcount = afterburnermap.readVarint(0);
 
 		this.map = {
-				map : [],
-				header : {
-					unk1 : bleh,
-					reslength : reslength,
-					realcount : realcount
-			}
+			map : [],
+			header : {
+				unk1 : bleh,
+				reslength : reslength,
+				realcount : realcount
+			},
+			ilscount : 0
 		}
 
 		for (var i=0; i < realcount; i++) {
-			this.map.map.push({
+			var entry = {
 				id : afterburnermap.readVarint(0),
 				offset : afterburnermap.readVarint(0),
 				compressedSize : afterburnermap.readVarint(0),
 				decompressedSize : afterburnermap.readVarint(0),
 				compressionMode : afterburnermap.readVarint(0),
 				chunkID : afterburnermap.readFourCC()
-			});
+			}
+			if (entry.offset == -1) {
+				this.map.ilscount++;
+			}
+			
+			//trace(entry.chunkID,"EARTHQUAKE.COMPRESSED","ANALYSIS");
+			this.map.map.push(entry);
 		}
 
 		console.log(this.map);
@@ -153,6 +161,7 @@ EarthQuake.ContainerCompressed.prototype.readILS = function() {
 	for (var i=0; i < this.map.map.length; i++) {
 		var curr = this.map.map[i];
 		var currID = curr.chunkID;
+		var currnumID = curr.id;
 		/*
 			TODO : 
 				proper dump (prob filesaver.js?)
@@ -161,9 +170,9 @@ EarthQuake.ContainerCompressed.prototype.readILS = function() {
 		if (currID == "ILS ") {
 			this.bytes.offset = curr.offset;
 			var ILS = this.readChunk(this.dataOffset + curr.offset,curr.compressedSize,false,false,false);
-			var dumpstr = "";
+			/*var dumpstr = "";
 			var dump = new Uint8Array(ILS.bytes._buffer);
-			for (var i2=0; i2 < dump.length; i2++) {
+			for (var i2=0; i2 < 256; i2++) {
 				var hx = dump[i2];
 				if (hx < 16) {
 					dumpstr += "0" + hx.toString(16);
@@ -171,9 +180,64 @@ EarthQuake.ContainerCompressed.prototype.readILS = function() {
 					dumpstr += hx.toString(16);
 				}
 			}
-			// trace(dumpstr,"EARTHQUAKE.COMPRESSED","DUMP"); // fairly expensive process
-			console.log(ILS);
-			break;
+			trace(dumpstr,"EARTHQUAKE.COMPRESSED","DUMP"); // fairly expensive process
+			console.log(ILS);*/
+			ILS.readVarint = this.readVarint;
+			ILS.readChunk = this.readChunk;
+			ILS.buffer = ILS.bytes._buffer;
+
+			for (var i2=0; i2 < this.map.ilscount; i2++) {
+				var resID = ILS.readVarint();
+				var chunkID = "    ";
+				for (var i3=0; i3 < this.map.map.length; i3++) {
+					var curr2 = this.map.map[i3];
+					if (curr2.id == resID) {
+						chunkID = curr2.chunkID;
+						var chunkdata = ILS.readChunk(ILS.bytes.position,curr2.decompressedSize,false,true,true);
+						chunkdata.id = chunkID;
+						chunkdata.resID = resID;
+						switch (chunkID) {
+							case "XTRl" : 
+								this.XTRAList = new EarthQuake.XtraList(chunkdata);
+								break;
+							default : 
+								this.chunks.push(chunkdata);
+								break;
+						}
+						break;
+					}
+				}
+			}
+			console.log(this.chunks);
+			console.log(this.XTRAList);
 		}
 	}
+}
+EarthQuake.ContainerCompressed.prototype.readKeyMappingPointers = function() {
+	var data = ils.bytes;
+	ils.readFourCC = this.readFourCC;
+	ils.subformat = this.subformat;
+	this.key = [];
+	data.position = 1;
+	var proplength = data.readUint16();
+	var entrylength = data.readUint16();
+	var length = data.readUint32();
+	var lengthmax = data.readUint32();
+	console.log(lengthmax + " | " + length);
+	for (var i=0; i < lengthmax; i++) {
+		var resid = data.readUint32();
+		var parentid = data.readUint32();
+		var chunkID = ils.readFourCC();
+		if (resid == 0x0ea4a7) {
+			console.log(chunkID + " | " + resid);
+		}
+		if (chunkID != "    ") {
+			this.key.push({
+				id : resid,
+				owner : parentid,
+				chunkID : chunkID
+			});
+		}
+	}
+	console.log(this.key);
 }
